@@ -301,11 +301,18 @@ end
 # |)
 
 puts interpret(%q|
-((lambda (n)
-  ((lambda (f) (f f n))
-   (lambda (f x)
-           (if (= x 0)
-               0
-               (+ x (f f (- x 1)))))))
- 10)
+(let ((y (lambda (f)
+           ((lambda (procedure)
+              (f (lambda (arg) ((procedure procedure) arg))))
+            (lambda (procedure)
+              (f (lambda (arg) ((procedure procedure) arg)))))))
+      (fib-pre (lambda (f)
+                 (lambda (n)
+                   (if (= n 0)
+                       0
+                       (if (= n 1)
+                           1
+                           (+ (f (- n 1)) (f (- n 2)))))))))
+  (let ((fib (y fib-pre)))
+    (fib 10)))
 |)
