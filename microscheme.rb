@@ -292,10 +292,20 @@ end
 # puts interpret('(if (= 1 2) 4 5)')
 # puts interpret('(if (= 1 2) (+1 2) (+ 3 4))')
 
+# puts interpret(%q|
+# (let ((tri (lambda (x f)
+#              (if (= x 0)
+#                  0
+#                  (+ x (f (- x 1) f))))))
+#   (tri 100 tri))
+# |)
+
 puts interpret(%q|
-(let ((tri (lambda (x f)
-             (if (= x 0)
-                 0
-                 (+ x (f (- x 1) f))))))
-  (tri 100 tri))
+((lambda (n)
+  ((lambda (f) (f f n))
+   (lambda (f x)
+           (if (= x 0)
+               0
+               (+ x (f f (- x 1)))))))
+ 10)
 |)
