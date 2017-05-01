@@ -11,19 +11,19 @@ type expression interface {
 	expression()
 }
 
-type compoundExpression struct {
-	children []expression
-}
-
-func (_ *compoundExpression) expression() {
-	// does nothing
-}
-
 type tokenExpression struct {
 	token string
 }
 
 func (_ *tokenExpression) expression() {
+	// does nothing
+}
+
+type compoundExpression struct {
+	children []expression
+}
+
+func (_ *compoundExpression) expression() {
 	// does nothing
 }
 
