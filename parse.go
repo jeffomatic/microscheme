@@ -8,14 +8,14 @@ var (
 )
 
 type expression interface {
-	expression()
+	expressionType()
 }
 
 type tokenExpression struct {
 	token string
 }
 
-func (_ *tokenExpression) expression() {
+func (_ *tokenExpression) expressionType() {
 	// does nothing
 }
 
@@ -23,8 +23,18 @@ type compoundExpression struct {
 	children []expression
 }
 
-func (_ *compoundExpression) expression() {
+func (_ *compoundExpression) expressionType() {
 	// does nothing
+}
+
+func isTokenExpression(expr expression) bool {
+	_, ok := expr.(*tokenExpression)
+	return ok
+}
+
+func isCompoundExpression(expr expression) bool {
+	_, ok := expr.(*compoundExpression)
+	return ok
 }
 
 func parse(tokens []string) ([]expression, error) {
