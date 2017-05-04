@@ -11,6 +11,11 @@ func TestValueEqual(t *testing.T) {
 		want bool
 	}{
 		{
+			a:    nullValue{},
+			b:    nullValue{},
+			want: true,
+		},
+		{
 			a:    numberValue{underlying: 1},
 			b:    numberValue{underlying: 1},
 			want: true,
@@ -79,6 +84,7 @@ func TestValueEqual(t *testing.T) {
 
 func TestValueIncomparable(t *testing.T) {
 	vals := []value{
+		nullValue{},
 		numberValue{},
 		boolValue{},
 		new(procValue),
@@ -90,16 +96,27 @@ func TestValueIncomparable(t *testing.T) {
 		}
 
 		for _, v2 := range vals[i+1:] {
-			var err error
+			t.Logf("Case: %v and %v", v1, v2)
 
-			_, err = v1.equals(v2)
-			if err != errIncomparableValueTypes {
-				t.Errorf("%v and %v should be incomparable", v1, v2)
+			var (
+				eq  bool
+				err error
+			)
+
+			eq, err = v1.equals(v2)
+			if err != nil {
+				t.Error("error:", err)
+			}
+			if eq {
+				t.Error("should not be equal")
 			}
 
-			_, err = v2.equals(v1)
-			if err != errIncomparableValueTypes {
-				t.Errorf("%v and %v should be incomparable", v2, v1)
+			eq, err = v2.equals(v1)
+			if err != nil {
+				t.Error("error:", err)
+			}
+			if eq {
+				t.Error("should not be equal")
 			}
 		}
 	}
