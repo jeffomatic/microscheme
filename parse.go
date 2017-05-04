@@ -1,6 +1,9 @@
 package main
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var (
 	errInvalidClosingBrace = errors.New("invalid closing brace")
@@ -35,6 +38,22 @@ func isTokenExpression(expr expression) bool {
 func isCompoundExpression(expr expression) bool {
 	_, ok := expr.(*compoundExpression)
 	return ok
+}
+
+func mustExpressionToken(expr expression) string {
+	res, ok := expr.(*tokenExpression)
+	if !ok {
+		panic(fmt.Sprintf("must be token expression: %v", expr))
+	}
+	return res.token
+}
+
+func mustExpressionChildren(expr expression) []expression {
+	res, ok := expr.(*compoundExpression)
+	if !ok {
+		panic(fmt.Sprintf("must be compound expression: %v", expr))
+	}
+	return res.children
 }
 
 func parse(tokens []string) ([]expression, error) {
