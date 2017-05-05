@@ -38,7 +38,7 @@ func eval(expr expression, env *frame) (value, error) {
 	case exprDereference:
 		return env.get(mustExpressionToken(expr))
 	case exprBegin:
-		return evalBegin(expr, env)
+		return evalSequence(mustExpressionChildren(expr)[1:], env)
 	case exprIf:
 		return evalIf(expr, env)
 	case exprLambda:
@@ -60,12 +60,12 @@ func evalNumber(expr expression, env *frame) (value, error) {
 	return numberValue{num}, nil
 }
 
-func evalBegin(expr expression, env *frame) (value, error) {
+func evalSequence(exprs []expression, env *frame) (value, error) {
 	var (
 		last value = theNullValue
 		err  error
 	)
-	for _, c := range mustExpressionChildren(expr)[1:] {
+	for _, c := range exprs {
 		last, err = eval(c, env)
 		if err != nil {
 			return nil, err
@@ -128,18 +128,7 @@ func evalLet(expr expression, env *frame) (value, error) {
 		nextEnv.set(mustExpressionToken(identifier), rval)
 	}
 
-	var (
-		lastVal value
-		err     error
-	)
-	for _, b := range body {
-		lastVal, err = eval(b, nextEnv)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return lastVal, err
+	return evalSequence(body, nextEnv)
 }
 
 func evalApplication(expr expression, env *frame) (value, error) {
@@ -170,14 +159,5 @@ func evalApplication(expr expression, env *frame) (value, error) {
 		nextEnv.set(param, argVal)
 	}
 
-	var lastVal value
-	for _, b := range fproc.body {
-		var err error
-		lastVal, err = eval(b, nextEnv)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return lastVal, err
+	return evalSequence(fproc.body, nextEnv)
 }
