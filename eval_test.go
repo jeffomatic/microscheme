@@ -77,10 +77,11 @@ func TestEval(t *testing.T) {
 		},
 		{
 			src: `
-(let ((a 1)
-	    (b 2))
-	a
-	b)`,
+				(let ((a 1)
+					    (b 2))
+					a
+					b)
+			`,
 			want: numberValue{2},
 		},
 		{
