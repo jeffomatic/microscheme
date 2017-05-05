@@ -23,7 +23,7 @@ const (
 	exprDereference = iota
 
 	// compound expression types
-	exprSequence    = iota
+	exprBegin       = iota
 	exprIf          = iota
 	exprLambda      = iota
 	exprLet         = iota
@@ -74,7 +74,7 @@ func classifyCompound(expr *compoundExpression) (expressionType, error) {
 
 	switch c.token {
 	case "begin":
-		return exprSequence, nil
+		return exprBegin, nil
 	case "if":
 		if len(expr.children) != 4 {
 			return exprInvalid, errInvalidCompoundExpression

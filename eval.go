@@ -37,8 +37,8 @@ func eval(expr expression, env *frame) (value, error) {
 		return boolValue{mustExpressionToken(expr) == "#t"}, nil
 	case exprDereference:
 		return env.get(mustExpressionToken(expr))
-	case exprSequence:
-		return evalSequence(expr, env)
+	case exprBegin:
+		return evalBegin(expr, env)
 	case exprIf:
 		return evalIf(expr, env)
 	case exprLambda:
@@ -60,7 +60,7 @@ func evalNumber(expr expression, env *frame) (value, error) {
 	return numberValue{num}, nil
 }
 
-func evalSequence(expr expression, env *frame) (value, error) {
+func evalBegin(expr expression, env *frame) (value, error) {
 	var (
 		last value = theNullValue
 		err  error

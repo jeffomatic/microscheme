@@ -38,11 +38,11 @@ func TestClassify(t *testing.T) {
 		},
 		{
 			src:  `(begin)`,
-			want: exprSequence,
+			want: exprBegin,
 		},
 		{
 			src:  `(begin a b (c))`,
-			want: exprSequence,
+			want: exprBegin,
 		},
 		{
 			src:  `(if a b c)`,
