@@ -60,20 +60,6 @@ func evalNumber(expr expression, env *frame) (value, error) {
 	return numberValue{num}, nil
 }
 
-func evalSequence(exprs []expression, env *frame) (value, error) {
-	var (
-		last value = theNullValue
-		err  error
-	)
-	for _, c := range exprs {
-		last, err = eval(c, env)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return last, nil
-}
-
 func evalIf(expr expression, env *frame) (value, error) {
 	c := mustExpressionChildren(expr)
 	predicate := c[1]
