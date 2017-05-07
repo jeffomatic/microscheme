@@ -85,6 +85,10 @@ func TestEval(t *testing.T) {
 			want: numberValue{2},
 		},
 		{
+			src:  `(primitive + 1 2)`,
+			want: numberValue{3},
+		},
+		{
 			src:  `(testProc #t)`,
 			want: theTrueValue,
 		},

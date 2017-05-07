@@ -137,6 +137,14 @@ func TestClassify(t *testing.T) {
 			wantErr: errInvalidCompoundExpression,
 		},
 		{
+			src:  `(primitive +)`,
+			want: exprPrimitive,
+		},
+		{
+			src:     `(primitive)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
 			src:  `(a)`,
 			want: exprApplication,
 		},

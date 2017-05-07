@@ -45,6 +45,8 @@ func eval(expr expression, env *frame) (value, error) {
 		return evalLambda(expr, env)
 	case exprLet:
 		return evalLet(expr, env)
+	case exprPrimitive:
+		return evalPrimitive(expr, env)
 	case exprApplication:
 		return evalApplication(expr, env)
 	default:
@@ -115,6 +117,15 @@ func evalLet(expr expression, env *frame) (value, error) {
 	}
 
 	return evalSequence(body, nextEnv)
+}
+
+func evalPrimitive(expr expression, env *frame) (value, error) {
+	c := mustExpressionChildren(expr)
+	f, ok := primitives[mustExpressionToken(c[1])]
+	if !ok {
+		return nil, errInvalidCompoundExpression
+	}
+	return f(c[2:], env)
 }
 
 func evalApplication(expr expression, env *frame) (value, error) {

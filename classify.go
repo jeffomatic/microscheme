@@ -27,6 +27,7 @@ const (
 	exprIf          = iota
 	exprLambda      = iota
 	exprLet         = iota
+	exprPrimitive   = iota
 	exprApplication = iota
 )
 
@@ -111,6 +112,14 @@ func classifyCompound(expr *compoundExpression) (expressionType, error) {
 		}
 
 		return exprLet, nil
+	case "primitive":
+		if len(expr.children) < 2 {
+			return exprInvalid, errInvalidCompoundExpression
+		}
+		if _, ok := expr.children[0].(*tokenExpression); !ok {
+			return exprInvalid, errInvalidCompoundExpression
+		}
+		return exprPrimitive, nil
 	default:
 		return exprApplication, nil
 	}
