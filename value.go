@@ -49,7 +49,7 @@ func (v numberValue) greaterThan(other value) (bool, error) {
 	case *numberValue:
 		return v.underlying > other.underlying, nil
 	default:
-		return false, nil
+		return false, errIncomparableValueTypes
 	}
 }
 
