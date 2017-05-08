@@ -1,8 +1,6 @@
-# microscheme
+# sgeme
 
-Because I'm feeling some retroactive FOMO for the kids who actually paid attention in 61A.
-
-This is a minimal Scheme interpretation written in Ruby, and probably will migrate to Go if the lack of types starts to make me cranky. The idea that I am preoccupied with after a few hours of development is that one can actually get away with very few special forms, and this is especially convenient since I am already feeling extremely lazy about writing special forms. I've got `if` and `let` and `lambda`, which get me pretty far, and it seems with enough twisting you can get `let` out of `lambda` anyway. I will probably never get around to writing `define` or `cond`.
+Because I'm feeling some retroactive FOMO for the kids who actually paid attention in 61A: behold, a non-standard and partial Scheme interpretation written in Go.
 
 For the current project, I'm considering going as far as parking this interpreter on top of Go's concurrency runtime, which would be an interesting exercise in mashing what probably begs to be a single-threaded interpreter on top of a really decent concurrency model.
 

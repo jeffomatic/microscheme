@@ -1,7 +1,7 @@
 package main
 
 import (
-	"sgheme/errs"
+	"sgeme/errs"
 	"testing"
 )
 
