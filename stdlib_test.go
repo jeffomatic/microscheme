@@ -9,9 +9,8 @@ func TestStdlib(t *testing.T) {
 	env := stdlib.extend()
 
 	cases := []struct {
-		src     string
-		want    value
-		wantErr error
+		src  string
+		want value
 	}{
 		{
 			src:  `true`,
@@ -171,12 +170,13 @@ func TestStdlib(t *testing.T) {
 			t.Fatal("should be exactly one top-level expression: ", exprs)
 		}
 
-		got, gotErr := eval(exprs[0], env)
+		got, err := eval(exprs[0], env)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		if !reflect.DeepEqual(got, c.want) {
 			t.Errorf("value:\ngot:  %v\nwant: %v", got, c.want)
-		}
-		if gotErr != c.wantErr {
-			t.Errorf("error:\ngot:  %v\nwant: %v", gotErr, c.wantErr)
 		}
 	}
 }
