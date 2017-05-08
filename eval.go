@@ -11,9 +11,8 @@ var (
 	theTrueValue  value
 	theFalseValue value
 
-	errNonBooleanPredicate    = errors.New("predicate must evaluate to boolean")
-	errApplicationOnNonProc   = errors.New("application operator must evaluate to proc")
-	errWrongNumberOfArguments = errors.New("application with wrong number of arguments")
+	errNonBooleanPredicate  = errors.New("predicate must evaluate to boolean")
+	errApplicationOnNonProc = errors.New("application operator must evaluate to proc")
 )
 
 func init() {

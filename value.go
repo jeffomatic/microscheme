@@ -9,6 +9,10 @@ type value interface {
 	equals(v value) (bool, error)
 }
 
+type orderable interface {
+	greaterThan(v value) (bool, error)
+}
+
 type nullValue struct {
 }
 
