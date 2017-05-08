@@ -40,7 +40,7 @@ func TestEval(t *testing.T) {
 		},
 		{
 			src:  `(begin)`,
-			want: theNullValue,
+			want: nullValue{},
 		},
 		{
 			src:  `(begin 1 2)`,
@@ -92,7 +92,7 @@ func TestEval(t *testing.T) {
 		},
 		{
 			src:  `(testProc #t)`,
-			want: theTrueValue,
+			want: boolValue{true},
 		},
 		{
 			src: `

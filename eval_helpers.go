@@ -14,7 +14,7 @@ func mapEval(exprs []expression, env *frame) ([]value, error) {
 
 func evalSequence(exprs []expression, env *frame) (value, error) {
 	if len(exprs) == 0 {
-		return theNullValue, nil
+		return nullValue{}, nil
 	}
 
 	values, err := mapEval(exprs, env)

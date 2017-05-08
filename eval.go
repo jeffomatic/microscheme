@@ -7,19 +7,9 @@ import (
 )
 
 var (
-	theNullValue  value
-	theTrueValue  value
-	theFalseValue value
-
 	errNonBooleanPredicate  = errors.New("predicate must evaluate to boolean")
 	errApplicationOnNonProc = errors.New("application operator must evaluate to proc")
 )
-
-func init() {
-	theNullValue = nullValue{}
-	theTrueValue = boolValue{true}
-	theFalseValue = boolValue{false}
-}
 
 func eval(expr expression, env *frame) (value, error) {
 	t, err := classify(expr)
@@ -29,7 +19,7 @@ func eval(expr expression, env *frame) (value, error) {
 
 	switch t {
 	case exprNull:
-		return theNullValue, nil
+		return nullValue{}, nil
 	case exprNumber:
 		return evalNumber(expr, env)
 	case exprBoolean:
@@ -76,7 +66,7 @@ func evalIf(expr expression, env *frame) (value, error) {
 		return nil, errNonBooleanPredicate
 	}
 
-	if eq, _ := p.equals(theTrueValue); eq {
+	if eq, _ := p.equals(boolValue{true}); eq {
 		return eval(consequent, env)
 	}
 
