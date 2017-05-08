@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"sgheme/errs"
+	"testing"
+)
 
 func TestFrame(t *testing.T) {
 	f1 := newFrame()
@@ -23,8 +26,8 @@ func TestFrame(t *testing.T) {
 	}
 
 	v, err = f1.get("bool")
-	if err != errBindingNotFound {
-		t.Error("error:\ngot:  %v\nwant: %v", err, errBindingNotFound)
+	if errs.Root(err) != errBindingNotFound {
+		t.Errorf("error:\ngot:  %v\nwant: %v", errs.Root(err), errBindingNotFound)
 	}
 
 	v, err = f2.get("number")
@@ -44,7 +47,7 @@ func TestFrame(t *testing.T) {
 	}
 
 	v, err = f1.get("invalid")
-	if err != errBindingNotFound {
-		t.Error("error:\ngot:  %v\nwant: %v", err, errBindingNotFound)
+	if errs.Root(err) != errBindingNotFound {
+		t.Errorf("error:\ngot:  %v\nwant: %v", errs.Root(err), errBindingNotFound)
 	}
 }

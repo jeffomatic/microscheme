@@ -1,6 +1,11 @@
 package main
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+
+	"sgheme/errs"
+)
 
 var errBindingNotFound = errors.New("environment does not contain binding")
 
@@ -21,7 +26,7 @@ func (f *frame) get(k string) (value, error) {
 	}
 
 	if f.parent == nil {
-		return nil, errBindingNotFound
+		return nil, errs.WrapAfterf(errBindingNotFound, "%q", k)
 	}
 
 	return f.parent.get(k)
@@ -34,5 +39,23 @@ func (f *frame) set(k string, v value) {
 func (f *frame) extend() *frame {
 	res := newFrame()
 	res.parent = f
+	return res
+}
+
+func (f *frame) debug() string {
+	res := ""
+	i := 0
+
+	for f != nil {
+		res += fmt.Sprintf("-- frame %d --\n", i)
+
+		for k, v := range f.table {
+			res += fmt.Sprintf("%s: %+v", k, v)
+		}
+
+		f = f.parent
+		i += 1
+	}
+
 	return res
 }
