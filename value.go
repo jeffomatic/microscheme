@@ -79,6 +79,7 @@ func (v boolValue) equals(other value) (bool, error) {
 type procValue struct {
 	params []string
 	body   []expression
+	env    *frame
 }
 
 func (_ *procValue) valueType() {

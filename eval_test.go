@@ -59,6 +59,7 @@ func TestEval(t *testing.T) {
 			want: &procValue{
 				params: nil,
 				body:   []expression{&tokenExpression{"null"}},
+				env:    env,
 			},
 		},
 		{
@@ -69,6 +70,7 @@ func TestEval(t *testing.T) {
 					&tokenExpression{"a"},
 					&tokenExpression{"b"},
 				},
+				env: env,
 			},
 		},
 		{
@@ -91,6 +93,16 @@ func TestEval(t *testing.T) {
 		{
 			src:  `(testProc #t)`,
 			want: theTrueValue,
+		},
+		{
+			src: `
+				(((lambda (x)
+					(lambda (y)
+						(primitive + x y)))
+				  2)
+				 1)
+			`,
+			want: numberValue{3},
 		},
 	}
 
