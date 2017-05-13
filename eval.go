@@ -26,6 +26,8 @@ func eval(expr expression, env *frame) (value, error) {
 		return boolValue{mustExpressionToken(expr) == "#t"}, nil
 	case exprDereference:
 		return env.get(mustExpressionToken(expr))
+	case exprDefine:
+		return evalDefine(mustExpressionChildren(expr)[1:], env)
 	case exprBegin:
 		return evalSequence(mustExpressionChildren(expr)[1:], env)
 	case exprIf:
@@ -49,6 +51,35 @@ func evalNumber(expr expression, env *frame) (value, error) {
 		panic(fmt.Sprintf("value %v should be valid number but error: %v", expr, err))
 	}
 	return numberValue{num}, nil
+}
+
+func evalDefine(exprs []expression, env *frame) (value, error) {
+	switch first := exprs[0].(type) {
+	case *tokenExpression:
+		k := mustExpressionToken(first)
+
+		v, err := eval(exprs[1], env)
+		if err != nil {
+			return nil, err
+		}
+
+		env.set(k, v)
+		return nullValue{}, nil
+
+	case *compoundExpression:
+		k := mustExpressionToken(first.children[0])
+
+		var params []string
+		for _, paramExpr := range first.children[1:] {
+			params = append(params, mustExpressionToken(paramExpr))
+		}
+
+		env.set(k, &procValue{params: params, body: exprs[1:], env: env})
+		return nullValue{}, nil
+
+	default:
+		panic(fmt.Sprintf("invalid define expression: %v", exprs))
+	}
 }
 
 func evalIf(expr expression, env *frame) (value, error) {
