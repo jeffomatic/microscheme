@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 )
 
@@ -23,6 +24,7 @@ const (
 	exprDereference = iota
 
 	// compound expression types
+	exprDefine      = iota
 	exprBegin       = iota
 	exprIf          = iota
 	exprLambda      = iota
@@ -74,6 +76,31 @@ func classifyCompound(expr *compoundExpression) (expressionType, error) {
 	}
 
 	switch c.token {
+	case "define":
+		if len(expr.children) < 3 {
+			return exprInvalid, errInvalidCompoundExpression
+		}
+
+		switch v := expr.children[1].(type) {
+		case *tokenExpression: // standard variable binding
+			if len(expr.children) != 3 {
+				return exprInvalid, errInvalidCompoundExpression
+			}
+		case *compoundExpression: // function declaration shorthand
+			if len(v.children) == 0 {
+				return exprInvalid, errInvalidCompoundExpression
+			}
+
+			for _, p := range v.children {
+				if !isTokenExpression(p) {
+					return exprInvalid, errInvalidCompoundExpression
+				}
+			}
+		default:
+			panic(fmt.Sprintf("invalid expression: %v", v))
+		}
+
+		return exprDefine, nil
 	case "begin":
 		return exprBegin, nil
 	case "if":

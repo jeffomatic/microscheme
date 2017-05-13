@@ -37,6 +37,58 @@ func TestClassify(t *testing.T) {
 			want: exprDereference,
 		},
 		{
+			src:  `(define a b)`,
+			want: exprDefine,
+		},
+		{
+			src:  `(define a (b))`,
+			want: exprDefine,
+		},
+		{
+			src:  `(define (a) b)`,
+			want: exprDefine,
+		},
+		{
+			src:  `(define (a) (b))`,
+			want: exprDefine,
+		},
+		{
+			src:  `(define (a b) c)`,
+			want: exprDefine,
+		},
+		{
+			src:  `(define (a b c) d)`,
+			want: exprDefine,
+		},
+		{
+			src:  `(define (a b) c d)`,
+			want: exprDefine,
+		},
+		{
+			src:     `(define)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(define a)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(define a b c)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(define () a)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(define ((a)) b)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(define (a (b)) c)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
 			src:  `(begin)`,
 			want: exprBegin,
 		},
