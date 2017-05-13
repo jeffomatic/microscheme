@@ -1,44 +1,39 @@
 package main
 
+import "fmt"
+
 var stdlib *frame
+
+const src = `
+(define true #t)
+(define false #f)
+(define (+ a b) (primitive + a b))
+(define (- a b) (primitive - a b))
+(define (* a b) (primitive * a b))
+(define (/ a b) (primitive / a b))
+(define (not a) (if a false true))
+(define (or a b) (if a true b))
+(define (and a b) (if a b false))
+(define (xor a b) (if a (not b) b))
+(define (= a b) (primitive = a b))
+(define (> a b) (primitive > a b))
+(define (>= a b) (or (= a b) (> a b)))
+(define (< a b) (>= b a))
+(define (<= a b) (> b a))
+`
 
 func init() {
 	stdlib = newFrame()
 
-	stdlib.set("true", boolValue{true})
-	stdlib.set("false", boolValue{false})
-
-	libSrc := map[string]string{
-		"+":   "(lambda (a b) (primitive + a b))",
-		"-":   "(lambda (a b) (primitive - a b))",
-		"*":   "(lambda (a b) (primitive * a b))",
-		"/":   "(lambda (a b) (primitive / a b))",
-		"not": `(lambda (a) (if a false true))`,
-		"or":  `(lambda (a b) (if a true b))`,
-		"and": `(lambda (a b) (if a b false))`,
-		"xor": `(lambda (a b) (if a (not b) b))`,
-		"=":   "(lambda (a b) (primitive = a b))",
-		">":   "(lambda (a b) (primitive > a b))",
-		">=":  "(lambda (a b) (or (= a b) (> a b)))",
-		"<":   "(lambda (a b) (>= b a))",
-		"<=":  "(lambda (a b) (> b a))",
+	exprs, err := parse(tokenize(src))
+	if err != nil {
+		panic("failed to parse stdlib source: " + err.Error())
 	}
 
-	for k, src := range libSrc {
-		exprs, err := parse(tokenize(src))
+	for _, expr := range exprs {
+		_, err = eval(expr, stdlib)
 		if err != nil {
-			panic("failed to parse " + k + ": " + err.Error())
+			panic(fmt.Sprintf("failed to evaluate: %v:\nerror: %v", expr, err))
 		}
-
-		if len(exprs) != 1 {
-			panic(k + " does not parse to single expression")
-		}
-
-		v, err := eval(exprs[0], stdlib)
-		if err != nil {
-			panic("failed to evaluate " + k + ": " + err.Error())
-		}
-
-		stdlib.set(k, v)
 	}
 }
