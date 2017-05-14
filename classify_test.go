@@ -33,6 +33,10 @@ func TestClassify(t *testing.T) {
 			want: exprBoolean,
 		},
 		{
+			src:  `"foo bar"`,
+			want: exprString,
+		},
+		{
 			src:  `foo`,
 			want: exprDereference,
 		},

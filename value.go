@@ -76,6 +76,25 @@ func (v boolValue) equals(other value) (bool, error) {
 	}
 }
 
+type stringValue struct {
+	underlying string
+}
+
+func (_ stringValue) valueType() {
+	// does nothing
+}
+
+func (v stringValue) equals(other value) (bool, error) {
+	switch other := other.(type) {
+	case stringValue:
+		return v.underlying == other.underlying, nil
+	case *stringValue:
+		return v.underlying == other.underlying, nil
+	default:
+		return false, nil
+	}
+}
+
 type procValue struct {
 	params []string
 	body   []expression

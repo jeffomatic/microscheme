@@ -35,6 +35,22 @@ func TestEval(t *testing.T) {
 			want: boolValue{false},
 		},
 		{
+			src:  `"foo"`,
+			want: stringValue{"foo"},
+		},
+		{
+			src:  `"foo bar"`,
+			want: stringValue{"foo bar"},
+		},
+		{
+			src:  `"foo\nbar\""`,
+			want: stringValue{"foo\nbar\""},
+		},
+		{
+			src:  `""`,
+			want: stringValue{},
+		},
+		{
 			src:  `testVar`,
 			want: numberValue{1},
 		},

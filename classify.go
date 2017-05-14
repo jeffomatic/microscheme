@@ -21,6 +21,7 @@ const (
 	// token expression types
 	exprNumber      = iota
 	exprBoolean     = iota
+	exprString      = iota
 	exprDereference = iota
 
 	// compound expression types
@@ -56,6 +57,8 @@ func classifyToken(expr *tokenExpression) (expressionType, error) {
 		return exprBoolean, nil
 	case numberRegexp.Match([]byte(expr.token)):
 		return exprNumber, nil
+	case expr.token[0] == '"':
+		return exprString, nil
 	default:
 		return exprDereference, nil
 	}

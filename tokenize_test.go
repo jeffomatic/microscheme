@@ -41,6 +41,30 @@ func TestTokenize(t *testing.T) {
 			`,
 			want: []string{"(", "lambda", "(", "foo", ")", "(", "+", "foo", "foo", ")", ")"},
 		},
+		{
+			src:  `1 "foo"`,
+			want: []string{"1", `"foo"`},
+		},
+		{
+			src:  `1"foo"`,
+			want: []string{"1", `"foo"`},
+		},
+		{
+			src:  `"foo bar"`,
+			want: []string{`"foo bar"`},
+		},
+		{
+			src:  `"foo \"bar \\"`,
+			want: []string{`"foo "bar \"`},
+		},
+		{
+			src:  `"foo\nbar"`,
+			want: []string{"\"foo\nbar\""},
+		},
+		{
+			src:  `""`,
+			want: []string{"\"\""},
+		},
 	}
 
 	for _, c := range cases {

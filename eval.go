@@ -24,6 +24,9 @@ func eval(expr expression, env *frame) (value, error) {
 		return evalNumber(expr, env)
 	case exprBoolean:
 		return boolValue{mustExpressionToken(expr) == "#t"}, nil
+	case exprString:
+		s := mustExpressionToken(expr)
+		return stringValue{s[1 : len(s)-1]}, nil
 	case exprDereference:
 		return env.get(mustExpressionToken(expr))
 	case exprDefine:

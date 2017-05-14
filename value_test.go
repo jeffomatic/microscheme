@@ -56,6 +56,16 @@ func TestValueEqual(t *testing.T) {
 			want: false,
 		},
 		{
+			a:    stringValue{underlying: "foo"},
+			b:    &stringValue{underlying: "foo"},
+			want: true,
+		},
+		{
+			a:    stringValue{underlying: "foo"},
+			b:    &stringValue{underlying: "bar"},
+			want: false,
+		},
+		{
 			a:    &testProc,
 			b:    &testProc,
 			want: true,
@@ -87,6 +97,7 @@ func TestValueIncomparable(t *testing.T) {
 		nullValue{},
 		numberValue{},
 		boolValue{},
+		stringValue{},
 		new(procValue),
 	}
 
