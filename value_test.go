@@ -66,6 +66,21 @@ func TestValueEqual(t *testing.T) {
 			want: false,
 		},
 		{
+			a:    pairValue{car: numberValue{1}, cdr: numberValue{2}},
+			b:    pairValue{car: numberValue{1}, cdr: numberValue{2}},
+			want: true,
+		},
+		{
+			a:    pairValue{car: numberValue{1}, cdr: numberValue{2}},
+			b:    pairValue{car: numberValue{3}, cdr: numberValue{4}},
+			want: false,
+		},
+		{
+			a:    &pairValue{},
+			b:    &pairValue{},
+			want: true,
+		},
+		{
 			a:    &testProc,
 			b:    &testProc,
 			want: true,
@@ -98,6 +113,7 @@ func TestValueIncomparable(t *testing.T) {
 		numberValue{},
 		boolValue{},
 		stringValue{},
+		pairValue{},
 		new(procValue),
 	}
 

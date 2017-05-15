@@ -95,6 +95,29 @@ func (v stringValue) equals(other value) (bool, error) {
 	}
 }
 
+type pairValue struct {
+	car value
+	cdr value
+}
+
+func (_ pairValue) valueType() {
+	// does nothing
+}
+
+func (v pairValue) equals(other value) (bool, error) {
+	switch other := other.(type) {
+	case pairValue:
+		return v == other, nil
+	case *pairValue:
+		if other == nil {
+			return false, nil
+		}
+		return v == *other, nil
+	default:
+		return false, nil
+	}
+}
+
 type procValue struct {
 	params []string
 	body   []expression
