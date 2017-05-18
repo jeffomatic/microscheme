@@ -1,4 +1,4 @@
-# sgeme
+# scgeme
 
 Because I'm feeling some retroactive FOMO for the kids who actually paid attention in 61A: behold, a non-standard and partial Scheme interpretation written in Go.
 

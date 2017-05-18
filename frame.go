@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"sgeme/errs"
+	"scgeme/errs"
 )
 
 var errBindingNotFound = errors.New("environment does not contain binding")
