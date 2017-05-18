@@ -20,6 +20,9 @@ const src = `
 (define (>= a b) (or (= a b) (> a b)))
 (define (< a b) (>= b a))
 (define (<= a b) (> b a))
+(define (cons a b) (primitive cons a b))
+(define (car a) (primitive car a))
+(define (cdr a) (primitive cdr a))
 `
 
 func init() {

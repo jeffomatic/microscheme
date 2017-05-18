@@ -6,12 +6,15 @@ var primitives map[string]func([]expression, *frame) (value, error)
 
 func init() {
 	primitives = map[string]func([]expression, *frame) (value, error){
-		"+": primitiveAdd,
-		"-": primitiveSubtract,
-		"*": primitiveMultiply,
-		"/": primitiveDivide,
-		"=": primitiveEquals,
-		">": primitiveGreaterThan,
+		"+":    primitiveAdd,
+		"-":    primitiveSubtract,
+		"*":    primitiveMultiply,
+		"/":    primitiveDivide,
+		"=":    primitiveEquals,
+		">":    primitiveGreaterThan,
+		"cons": primitiveCons,
+		"car":  primitiveCar,
+		"cdr":  primitiveCdr,
 	}
 }
 
@@ -159,4 +162,53 @@ func primitiveGreaterThan(argExprs []expression, env *frame) (value, error) {
 	}
 
 	return boolValue{res}, nil
+}
+
+func primitiveCons(argExprs []expression, env *frame) (value, error) {
+	if len(argExprs) != 2 {
+		return nil, errWrongNumberOfArguments
+	}
+
+	args, err := mapEval(argExprs, env)
+	if err != nil {
+		return nil, err
+	}
+
+	return pairValue{car: args[0], cdr: args[1]}, nil
+}
+
+func primitiveCar(argExprs []expression, env *frame) (value, error) {
+	if len(argExprs) != 1 {
+		return nil, errWrongNumberOfArguments
+	}
+
+	arg, err := eval(argExprs[0], env)
+	if err != nil {
+		return nil, err
+	}
+
+	pair, ok := arg.(pairValue)
+	if !ok {
+		return nil, errInvalidArgumentType
+	}
+
+	return pair.car, nil
+}
+
+func primitiveCdr(argExprs []expression, env *frame) (value, error) {
+	if len(argExprs) != 1 {
+		return nil, errWrongNumberOfArguments
+	}
+
+	arg, err := eval(argExprs[0], env)
+	if err != nil {
+		return nil, err
+	}
+
+	pair, ok := arg.(pairValue)
+	if !ok {
+		return nil, errInvalidArgumentType
+	}
+
+	return pair.cdr, nil
 }

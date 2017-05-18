@@ -156,6 +156,18 @@ func TestStdlib(t *testing.T) {
 			src:  `(<= 1 1)`,
 			want: boolValue{false},
 		},
+		{
+			src:  `(cons 1 2)`,
+			want: pairValue{numberValue{1}, numberValue{2}},
+		},
+		{
+			src:  `(car (cons 1 2))`,
+			want: numberValue{1},
+		},
+		{
+			src:  `(cdr (cons 1 2))`,
+			want: numberValue{2},
+		},
 	}
 
 	for i, c := range cases {

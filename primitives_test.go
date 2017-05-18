@@ -364,3 +364,131 @@ func TestPrimitiveGreaterThan(t *testing.T) {
 		}
 	}
 }
+
+func TestPrimitiveCons(t *testing.T) {
+	cases := []struct {
+		src     string
+		want    value
+		wantErr error
+	}{
+		{
+			src: `(1 2)`,
+			want: pairValue{
+				car: numberValue{1},
+				cdr: numberValue{2},
+			},
+		},
+		{
+			src: `(1 (primitive + 2 3))`,
+			want: pairValue{
+				car: numberValue{1},
+				cdr: numberValue{5},
+			},
+		},
+		{
+			src:     `()`,
+			wantErr: errWrongNumberOfArguments,
+		},
+		{
+			src:     `(1)`,
+			wantErr: errWrongNumberOfArguments,
+		},
+		{
+			src:     `(1 2 3)`,
+			wantErr: errWrongNumberOfArguments,
+		},
+	}
+
+	for i, c := range cases {
+		t.Logf("Case %d: %s", i, c.src)
+
+		exprs, err := parse(tokenize(c.src))
+		if err != nil {
+			t.Fatal("parse error", err)
+		}
+
+		got, gotErr := primitiveCons(mustExpressionChildren(exprs[0]), newFrame())
+		if !reflect.DeepEqual(got, c.want) {
+			t.Errorf("got:  %v\nwant: %v", got, c.want)
+		}
+		if gotErr != c.wantErr {
+			t.Errorf("error:\ngot:  %v\nwant: %v", gotErr, c.wantErr)
+		}
+	}
+}
+
+func TestPrimitiveCar(t *testing.T) {
+	cases := []struct {
+		src     string
+		want    value
+		wantErr error
+	}{
+		{
+			src:  `((primitive cons 1 2))`,
+			want: numberValue{1},
+		},
+		{
+			src:     `()`,
+			wantErr: errWrongNumberOfArguments,
+		},
+		{
+			src:     `(1 2)`,
+			wantErr: errWrongNumberOfArguments,
+		},
+	}
+
+	for i, c := range cases {
+		t.Logf("Case %d: %s", i, c.src)
+
+		exprs, err := parse(tokenize(c.src))
+		if err != nil {
+			t.Fatal("parse error", err)
+		}
+
+		got, gotErr := primitiveCar(mustExpressionChildren(exprs[0]), newFrame())
+		if !reflect.DeepEqual(got, c.want) {
+			t.Errorf("got:  %v\nwant: %v", got, c.want)
+		}
+		if gotErr != c.wantErr {
+			t.Errorf("error:\ngot:  %v\nwant: %v", gotErr, c.wantErr)
+		}
+	}
+}
+
+func TestPrimitiveCdr(t *testing.T) {
+	cases := []struct {
+		src     string
+		want    value
+		wantErr error
+	}{
+		{
+			src:  `((primitive cons 1 2))`,
+			want: numberValue{2},
+		},
+		{
+			src:     `()`,
+			wantErr: errWrongNumberOfArguments,
+		},
+		{
+			src:     `(1 2)`,
+			wantErr: errWrongNumberOfArguments,
+		},
+	}
+
+	for i, c := range cases {
+		t.Logf("Case %d: %s", i, c.src)
+
+		exprs, err := parse(tokenize(c.src))
+		if err != nil {
+			t.Fatal("parse error", err)
+		}
+
+		got, gotErr := primitiveCdr(mustExpressionChildren(exprs[0]), newFrame())
+		if !reflect.DeepEqual(got, c.want) {
+			t.Errorf("got:  %v\nwant: %v", got, c.want)
+		}
+		if gotErr != c.wantErr {
+			t.Errorf("error:\ngot:  %v\nwant: %v", gotErr, c.wantErr)
+		}
+	}
+}
