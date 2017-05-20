@@ -9,8 +9,8 @@ func TestEval(t *testing.T) {
 	env := newFrame()
 	env.set("testVar", numberValue{1})
 	env.set("testProc", &procValue{
-		params: []string{"x"},
-		body:   []expression{&tokenExpression{"x"}},
+		formals: []string{"x"},
+		body:    []expression{&tokenExpression{"x"}},
 	})
 
 	cases := []struct {
@@ -73,15 +73,15 @@ func TestEval(t *testing.T) {
 		{
 			src: `(lambda () null)`,
 			want: &procValue{
-				params: nil,
-				body:   []expression{&tokenExpression{"null"}},
-				env:    env,
+				formals: nil,
+				body:    []expression{&tokenExpression{"null"}},
+				env:     env,
 			},
 		},
 		{
 			src: `(lambda (a b) a b)`,
 			want: &procValue{
-				params: []string{"a", "b"},
+				formals: []string{"a", "b"},
 				body: []expression{
 					&tokenExpression{"a"},
 					&tokenExpression{"b"},
@@ -149,8 +149,8 @@ func TestEvalDefine(t *testing.T) {
 	env := newFrame()
 	env.set("testVar", numberValue{1})
 	env.set("testProc", &procValue{
-		params: []string{"x"},
-		body:   []expression{&tokenExpression{"x"}},
+		formals: []string{"x"},
+		body:    []expression{&tokenExpression{"x"}},
 	})
 
 	cases := []struct {
@@ -186,8 +186,8 @@ func TestEvalDefine(t *testing.T) {
 			src: `(define a (lambda (x) x))`,
 			wantBound: map[string]value{
 				"a": &procValue{
-					params: []string{"x"},
-					body:   []expression{&tokenExpression{"x"}},
+					formals: []string{"x"},
+					body:    []expression{&tokenExpression{"x"}},
 					// env will be set by test harness
 				},
 			},
@@ -196,8 +196,8 @@ func TestEvalDefine(t *testing.T) {
 			src: `(define (a x) x)`,
 			wantBound: map[string]value{
 				"a": &procValue{
-					params: []string{"x"},
-					body:   []expression{&tokenExpression{"x"}},
+					formals: []string{"x"},
+					body:    []expression{&tokenExpression{"x"}},
 					// env will be set by test harness
 				},
 			},
@@ -206,8 +206,8 @@ func TestEvalDefine(t *testing.T) {
 			src: `(define (a) 1)`,
 			wantBound: map[string]value{
 				"a": &procValue{
-					params: nil,
-					body:   []expression{&tokenExpression{"1"}},
+					formals: nil,
+					body:    []expression{&tokenExpression{"1"}},
 					// env will be set by test harness
 				},
 			},
@@ -216,7 +216,7 @@ func TestEvalDefine(t *testing.T) {
 			src: `(define (a x y) (+ x y))`,
 			wantBound: map[string]value{
 				"a": &procValue{
-					params: []string{"x", "y"},
+					formals: []string{"x", "y"},
 					body: []expression{
 						&compoundExpression{
 							children: []expression{
@@ -234,8 +234,8 @@ func TestEvalDefine(t *testing.T) {
 			src: `(define (a x y) x y)`,
 			wantBound: map[string]value{
 				"a": &procValue{
-					params: []string{"x", "y"},
-					body:   []expression{&tokenExpression{"x"}, &tokenExpression{"y"}},
+					formals: []string{"x", "y"},
+					body:    []expression{&tokenExpression{"x"}, &tokenExpression{"y"}},
 					// env will be set by test harness
 				},
 			},

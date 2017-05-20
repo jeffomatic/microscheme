@@ -77,7 +77,7 @@ func evalDefine(exprs []expression, env *frame) (value, error) {
 			params = append(params, mustExpressionToken(paramExpr))
 		}
 
-		env.set(k, &procValue{params: params, body: exprs[1:], env: env})
+		env.set(k, &procValue{formals: params, body: exprs[1:], env: env})
 		return nullValue{}, nil
 
 	default:
@@ -117,7 +117,7 @@ func evalLambda(expr expression, env *frame) (value, error) {
 		params = append(params, mustExpressionToken(p))
 	}
 
-	return &procValue{params: params, body: body, env: env}, nil
+	return &procValue{formals: params, body: body, env: env}, nil
 }
 
 func evalLet(expr expression, env *frame) (value, error) {
@@ -165,12 +165,12 @@ func evalApplication(expr expression, env *frame) (value, error) {
 	if !ok {
 		return nil, errApplicationOnNonProc
 	}
-	if len(args) != len(proc.params) {
+	if len(args) != len(proc.formals) {
 		return nil, errWrongNumberOfArguments
 	}
 
 	nextEnv := proc.env.extend()
-	for i, param := range proc.params {
+	for i, param := range proc.formals {
 		argVal, err := eval(args[i], env)
 		if err != nil {
 			return nil, err

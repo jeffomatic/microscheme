@@ -119,9 +119,9 @@ func (v pairValue) equals(other value) (bool, error) {
 }
 
 type procValue struct {
-	params []string
-	body   []expression
-	env    *frame
+	formals []string
+	body    []expression
+	env     *frame
 }
 
 func (_ *procValue) valueType() {
