@@ -12,6 +12,18 @@ func TestEval(t *testing.T) {
 		formals: []string{"x"},
 		body:    []expression{&tokenExpression{"x"}},
 	})
+	env.set("testRest", &procValue{
+		formals: []string{"x"},
+		rest:    "y",
+		body: []expression{&compoundExpression{
+			children: []expression{
+				&tokenExpression{"primitive"},
+				&tokenExpression{"cons"},
+				&tokenExpression{"x"},
+				&tokenExpression{"y"},
+			},
+		}},
+	})
 
 	cases := []struct {
 		src     string
@@ -90,6 +102,54 @@ func TestEval(t *testing.T) {
 			},
 		},
 		{
+			src: `(lambda (. x) x)`,
+			want: &procValue{
+				rest: "x",
+				body: []expression{
+					&tokenExpression{"x"},
+				},
+				env: env,
+			},
+		},
+		{
+			src: `(lambda (x . y) x)`,
+			want: &procValue{
+				formals: []string{"x"},
+				rest:    "y",
+				body: []expression{
+					&tokenExpression{"x"},
+				},
+				env: env,
+			},
+		},
+		{
+			src: `(lambda (x y . z) x)`,
+			want: &procValue{
+				formals: []string{"x", "y"},
+				rest:    "z",
+				body: []expression{
+					&tokenExpression{"x"},
+				},
+				env: env,
+			},
+		},
+		{
+			src:     `(lambda (.) x)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(lambda (. .) x)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(lambda (. x y) x)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(lambda (. x .) x)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
 			src:  `(let ((a 1)) a)`,
 			want: numberValue{1},
 		},
@@ -109,6 +169,10 @@ func TestEval(t *testing.T) {
 		{
 			src:  `(testProc #t)`,
 			want: boolValue{true},
+		},
+		{
+			src:  `(testRest 1 2 3)`,
+			want: makeList([]value{numberValue{1}, numberValue{2}, numberValue{3}}),
 		},
 		{
 			src: `
@@ -240,6 +304,54 @@ func TestEvalDefine(t *testing.T) {
 				},
 			},
 		},
+		{
+			src: `(define (a . x) x)`,
+			wantBound: map[string]value{
+				"a": &procValue{
+					rest: "x",
+					body: []expression{&tokenExpression{"x"}},
+					// env will be set by test harness
+				},
+			},
+		},
+		{
+			src: `(define (a x . y) x)`,
+			wantBound: map[string]value{
+				"a": &procValue{
+					formals: []string{"x"},
+					rest:    "y",
+					body:    []expression{&tokenExpression{"x"}},
+					// env will be set by test harness
+				},
+			},
+		},
+		{
+			src: `(define (a x y . z) x)`,
+			wantBound: map[string]value{
+				"a": &procValue{
+					formals: []string{"x", "y"},
+					rest:    "z",
+					body:    []expression{&tokenExpression{"x"}},
+					// env will be set by test harness
+				},
+			},
+		},
+		{
+			src:     `(define (a .) x)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(define (a . .) x)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(define (a . x y) x)`,
+			wantErr: errInvalidCompoundExpression,
+		},
+		{
+			src:     `(define (a . x .) x)`,
+			wantErr: errInvalidCompoundExpression,
+		},
 	}
 
 	for i, c := range cases {
@@ -256,11 +368,18 @@ func TestEvalDefine(t *testing.T) {
 
 		caseEnv := env.extend()
 		got, gotErr := eval(exprs[0], caseEnv)
-		if !reflect.DeepEqual(got, nullValue{}) {
-			t.Errorf("value:\ngot:  %v\nwant: %v", got, nullValue{})
-		}
+
 		if gotErr != c.wantErr {
 			t.Errorf("error:\ngot:  %v\nwant: %v", gotErr, c.wantErr)
+			continue
+		}
+
+		if gotErr == nil && !reflect.DeepEqual(got, nullValue{}) {
+			t.Errorf("value:\ngot:  %v\nwant: %v", got, nullValue{})
+		}
+
+		if gotErr != nil && got != nil {
+			t.Errorf("value:\ngot:  %v\nwant: nil", got)
 		}
 
 		if len(c.wantBound) > 0 {

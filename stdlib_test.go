@@ -168,6 +168,18 @@ func TestStdlib(t *testing.T) {
 			src:  `(cdr (cons 1 2))`,
 			want: numberValue{2},
 		},
+		{
+			src:  `(list)`,
+			want: nullValue{},
+		},
+		{
+			src:  `(list 1)`,
+			want: makeList([]value{numberValue{1}}),
+		},
+		{
+			src:  `(list (+ 1 1) (+ 2 2))`,
+			want: makeList([]value{numberValue{2}, numberValue{4}}),
+		},
 	}
 
 	for i, c := range cases {

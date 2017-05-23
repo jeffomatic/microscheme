@@ -118,8 +118,17 @@ func (v pairValue) equals(other value) (bool, error) {
 	}
 }
 
+func makeList(vals []value) value {
+	var res value = nullValue{}
+	for i := len(vals) - 1; i >= 0; i-- {
+		res = pairValue{car: vals[i], cdr: res}
+	}
+	return res
+}
+
 type procValue struct {
 	formals []string
+	rest    string
 	body    []expression
 	env     *frame
 }

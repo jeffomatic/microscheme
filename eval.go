@@ -70,14 +70,12 @@ func evalDefine(exprs []expression, env *frame) (value, error) {
 		return nullValue{}, nil
 
 	case *compoundExpression:
-		k := mustExpressionToken(first.children[0])
-
-		var params []string
-		for _, paramExpr := range first.children[1:] {
-			params = append(params, mustExpressionToken(paramExpr))
+		proc, err := evalNewProc(first.children[1:], exprs[1:], env)
+		if err != nil {
+			return nil, err
 		}
 
-		env.set(k, &procValue{formals: params, body: exprs[1:], env: env})
+		env.set(mustExpressionToken(first.children[0]), proc)
 		return nullValue{}, nil
 
 	default:
@@ -109,15 +107,7 @@ func evalIf(expr expression, env *frame) (value, error) {
 
 func evalLambda(expr expression, env *frame) (value, error) {
 	c := mustExpressionChildren(expr)
-	paramExprs := c[1]
-	body := c[2:]
-
-	var params []string
-	for _, p := range mustExpressionChildren(paramExprs) {
-		params = append(params, mustExpressionToken(p))
-	}
-
-	return &procValue{formals: params, body: body, env: env}, nil
+	return evalNewProc(mustExpressionChildren(c[1]), c[2:], env)
 }
 
 func evalLet(expr expression, env *frame) (value, error) {
@@ -165,11 +155,15 @@ func evalApplication(expr expression, env *frame) (value, error) {
 	if !ok {
 		return nil, errApplicationOnNonProc
 	}
-	if len(args) != len(proc.formals) {
+	if len(args) < len(proc.formals) {
+		return nil, errWrongNumberOfArguments
+	}
+	if len(args) > len(proc.formals) && proc.rest == "" {
 		return nil, errWrongNumberOfArguments
 	}
 
 	nextEnv := proc.env.extend()
+
 	for i, param := range proc.formals {
 		argVal, err := eval(args[i], env)
 		if err != nil {
@@ -177,6 +171,20 @@ func evalApplication(expr expression, env *frame) (value, error) {
 		}
 
 		nextEnv.set(param, argVal)
+	}
+
+	if proc.rest != "" {
+		var restVals []value
+		for i := len(proc.formals); i < len(args); i++ {
+			v, err := eval(args[i], env)
+			if err != nil {
+				return nil, err
+			}
+
+			restVals = append(restVals, v)
+		}
+
+		nextEnv.set(proc.rest, makeList(restVals))
 	}
 
 	return evalSequence(proc.body, nextEnv)

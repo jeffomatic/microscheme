@@ -23,6 +23,7 @@ const src = `
 (define (cons a b) (primitive cons a b))
 (define (car a) (primitive car a))
 (define (cdr a) (primitive cdr a))
+(define (list . params) params)
 `
 
 func init() {
